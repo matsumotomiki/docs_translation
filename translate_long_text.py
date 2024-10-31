@@ -64,14 +64,13 @@ def translate_file(input_file_path, output_file_path):
         with open(output_file_path, "w", encoding="utf-8") as output_file:
             output_file.write(translated_text)
 
-        # Generate completed file name with date and original filename
+        # Rename input file with translated_YYYYMMDD_ prefix
         date_str = datetime.now().strftime("%Y%m%d")
-        original_filename = os.path.basename(output_file_path)
-        completed_file_name = f"translated_{date_str}_{original_filename}"
-        completed_file_path = os.path.join(os.path.dirname(output_file_path), completed_file_name)
+        translated_file_name = f"translated_{date_str}_{os.path.basename(input_file_path)}"
+        translated_file_path = os.path.join(os.path.dirname(input_file_path), translated_file_name)
         
-        os.rename(output_file_path, completed_file_path)
-        print(f" - translated and renamed to {completed_file_path}")
+        os.rename(input_file_path, translated_file_path)
+        print(f" - input file renamed to {translated_file_path}")
 
     except FileNotFoundError:
         print(f"no file: {input_file_path}")
@@ -89,10 +88,12 @@ def translate_folder(input_folder, output_folder):
                 input_file_path = os.path.join(root, file)
                 relative_path = os.path.relpath(input_file_path, input_folder)
                 output_file_path = os.path.join(output_folder, relative_path)
+
                 # Skip files that already have the translated_YYYYMMDD prefix
                 if file.startswith("translated_"):
-                    print(f" - Skipping already completed file: {input_file_path}")
+                    print(f" - Skipping already translated file: {input_file_path}")
                     continue
+
                 translate_file(input_file_path, output_file_path)
 
 def main():
